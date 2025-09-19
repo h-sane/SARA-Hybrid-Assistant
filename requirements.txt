@@ -1,0 +1,15 @@
+# requirements.txt
+
+# Web Server
+flask
+
+# LLM Services
+ollama>=0.1.5
+google-generativeai
+
+# Desktop Automation & Perception
+pyautogui>=0.9.54
+pywinauto>=0.6.9
+pywin32>=311
+pytesseract>=0.3.10
+Pillow>=10.0.0

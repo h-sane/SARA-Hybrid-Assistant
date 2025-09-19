@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARA: Hybrid AI Assistant</title>
+    <style>
+        /* Basic Styling for a clean, modern chat interface */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        .header {
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #252525;
+            border-bottom: 1px solid #333;
+        }
+        .chat-area {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        .user-message {
+            background-color: #007bff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .sara-message {
+            background-color: #3a3a3a;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .input-area {
+            padding: 1.5rem;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 1rem;
+            background-color: #252525;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #444;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            outline: none;
+            font-size: 1em;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🤖 SARA Assistant</div>
+        <div id="chatArea" class="chat-area">
+            <div class="message-bubble sara-message">Hello Master! I am the new, upgraded version of SARA. How can I assist you today?</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your command...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatArea = document.getElementById('chatArea');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message-bubble');
+            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'sara-message');
+            messageDiv.textContent = text;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        async function handleSendCommand() {
+            const command = userInput.value.trim();
+            if (!command) return;
+
+            addMessage(command, 'user');
+            userInput.value = '';
+            addMessage('SARA is thinking...', 'sara'); // Temporary thinking message
+
+            try {
+                const response = await fetch('/api/command', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: command }),
+                });
+
+                // Remove the "thinking" message
+                chatArea.removeChild(chatArea.lastChild);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    addMessage(result.response, 'sara');
+                } else {
+                    addMessage(`An error occurred: ${result.response}`, 'sara');
+                }
+            } catch (error) {
+                // Remove the "thinking" message even if there's an error
+                chatArea.removeChild(chatArea.lastChild);
+                addMessage(`A communication error occurred. Please check the terminal for details. Error: ${error.message}`, 'sara');
+                console.error('Error:', error);
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSendCommand);
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleSendCommand();
+            }
+        });
+    </script>
+</body>
+</html>

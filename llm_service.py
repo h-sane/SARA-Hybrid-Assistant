@@ -41,16 +41,22 @@ def offline_llm_text(prompt: str) -> str:
 
 def get_intent(user_command: str) -> str:
     """
-    The Router: Final version with stricter definitions to prevent misclassification.
+    The Router: Final version with four intents, including 'remember'.
     """
     prompt = f"""
-    You are an intent router. Your job is to classify the user's command into ONE of three categories: 'automation', 'screen_read', or 'conversation'.
+    You are an intent router. Classify the user's command into ONE of the following four categories:
+    'automation', 'screen_read', 'conversation', or 'remember'.
 
-    - 'automation': Use for commands that require controlling an application like opening files, typing text, or saving. Example: "open notepad and write a story"
-    - 'screen_read': Use for commands that involve seeing, capturing, reading, or analyzing the screen's content. Example: "what is on my screen right now?" or "capture this and tell me about it"
-    - 'conversation': Use for all other general questions, greetings, or chat. Example: "what is the capital of india?"
+    - 'automation': Controlling an application like opening files, typing text, or saving.
+    - 'screen_read': Seeing, capturing, reading, or analyzing the screen's content.
+    - 'remember': The user explicitly asks the assistant to remember a piece of information for later.
+    - 'conversation': All other general questions, greetings, or chat.
 
-    Respond with ONLY the single-word category name.
+    Here are some examples:
+    - User command: "open notepad and write a new story" -> automation
+    - User command: "what is on my screen right now?" -> screen_read
+    - User command: "Remember that my project deadline is October 25th" -> remember
+    - User command: "what is the capital of india?" -> conversation
 
     Now, classify the following command:
     User command: "{user_command}"
@@ -63,9 +69,11 @@ def get_intent(user_command: str) -> str:
             return 'automation'
         elif 'screen_read' in response:
             return 'screen_read'
+        elif 'remember' in response:
+            return 'remember'
         else:
             return 'conversation'
-              
+            
     except Exception as e:
         print(f"Error classifying intent: {e}")
         return 'conversation'

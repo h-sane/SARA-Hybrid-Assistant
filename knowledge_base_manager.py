@@ -15,13 +15,13 @@ COLLECTION_NAME = "sara_memory_stream"
 def load_knowledge_base() -> dict:
     """Loads the fact store from the JSON file."""
     if not os.path.exists(KB_FILE):
-        return {}
+        return {"user_details": {}, "contacts": {}}
     try:
         with open(KB_FILE, 'r') as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError) as e:
         print(f"Error loading knowledge base: {e}")
-        return {}
+        return {"user_details": {}, "contacts": {}}
 
 def save_knowledge_base(data: dict):
     """Saves the provided dictionary to the fact store JSON file."""
@@ -30,6 +30,20 @@ def save_knowledge_base(data: dict):
             json.dump(data, f, indent=4)
     except IOError as e:
         print(f"Error saving knowledge base: {e}")
+
+def get_user_details() -> dict:
+    """A helper function to quickly get the user_details section."""
+    kb = load_knowledge_base()
+    return kb.get("user_details", {})
+
+def update_contact(name: str, details: dict):
+    """Adds or updates a contact in the knowledge base fact store."""
+    kb = load_knowledge_base()
+    if "contacts" not in kb:
+        kb["contacts"] = {}
+    kb["contacts"][name] = details
+    save_knowledge_base(kb)
+    print(f"Knowledge base (Fact Store) updated for contact: {name}")
 
 # --- Memory Stream (Vector DB) Class ---
 
@@ -40,12 +54,10 @@ class MemoryStream:
         and loading the embedding model.
         """
         try:
-            # Load the embedding model. This will download the model the first time it's run.
             print("Loading embedding model... (This may take a moment on first run)")
             self.model = SentenceTransformer('all-MiniLM-L6-v2')
             print("Embedding model loaded successfully.")
 
-            # Set up the ChromaDB client and collection
             self.client = chromadb.PersistentClient(path=DB_PATH)
             self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
             self.memory_id_counter = self.collection.count()
@@ -66,14 +78,10 @@ class MemoryStream:
             return
 
         try:
-            # Convert the text to a vector
             embedding = self.model.encode(text).tolist()
-
-            # Increment and use the counter for a unique ID
             self.memory_id_counter += 1
             memory_id = str(self.memory_id_counter)
 
-            # Store the vector, the original text (as metadata), and the ID
             self.collection.add(
                 embeddings=[embedding],
                 documents=[text],
@@ -94,15 +102,11 @@ class MemoryStream:
             return []
 
         try:
-            # Convert the query to a vector
             query_embedding = self.model.encode(query_text).tolist()
-
-            # Search the collection for the most similar memories
             results = self.collection.query(
                 query_embeddings=[query_embedding],
                 n_results=num_results
             )
-            # Return the list of remembered document texts
             return results.get('documents', [[]])[0]
         except Exception as e:
             print(f"Error recalling memories: {e}")

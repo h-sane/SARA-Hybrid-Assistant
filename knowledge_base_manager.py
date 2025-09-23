@@ -45,6 +45,16 @@ def update_contact(name: str, details: dict):
     save_knowledge_base(kb)
     print(f"Knowledge base (Fact Store) updated for contact: {name}")
 
+def update_user_details(details_to_update: dict):
+    """Adds or updates details in the user_details section of the fact store."""
+    kb = load_knowledge_base()
+    if "user_details" not in kb:
+        kb["user_details"] = {}
+    
+    kb["user_details"].update(details_to_update)
+    save_knowledge_base(kb)
+    print(f"Knowledge base (User Details) updated with: {details_to_update.keys()}")
+
 # --- Memory Stream (Vector DB) Class ---
 
 class MemoryStream:

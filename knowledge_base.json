@@ -1,0 +1,12 @@
+{
+    "user_details": {
+        "name": "Hussain S",
+        "age": 21,
+        "teacher_name": "Dr. Victo Sudha George",
+        "year_of_study": "4th",
+        "degree": "B.Tech CSE",
+        "college": "Dr.M.G.R.Educational and Research Institute",
+        "city": "Chennai"
+    },
+    "contacts": {}
+}

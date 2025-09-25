@@ -26,11 +26,12 @@ def launch_and_focus(application_name: str) -> Application:
         time.sleep(2) # Give it a solid 2 seconds to initialize
 
         # Step 2: Connect to the application using the UIA backend and the executable path.
-        # This is more reliable than searching for a window title.
+        print(f"Attempting to connect to '{exe}'...")
         app = Application(backend="uia").connect(path=exe, timeout=10)
         
         # Step 3: Find the top window and set focus.
         main_window = app.top_window()
+        main_window.wait('ready', timeout=5)
         main_window.set_focus()
         
         print(f"Successfully connected to and focused '{application_name}'")

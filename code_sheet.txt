@@ -1,0 +1,130 @@
+Of course, Master. Here is a concise cheatsheet with the one-sentence explanations and code snippets you requested.
+
+-----
+
+## \#\# Virtual Environment (`venv`)
+
+**Create Environment**
+Creates a new, isolated 'clean room' for your project's libraries in a folder named `venv`.
+
+```bash
+python -m venv venv
+```
+
+-----
+
+**Activate Environment (Windows)**
+Activates the environment, so your terminal uses the libraries inside the `venv` folder.
+
+```powershell
+.\venv\Scripts\activate
+```
+
+-----
+
+**Deactivate Environment**
+Deactivates the environment, returning your terminal to the system's global Python installation.
+
+```bash
+deactivate
+```
+
+-----
+
+**Delete Environment (Windows)**
+Completely and permanently deletes the virtual environment folder and all its contents.
+
+```powershell
+Remove-Item -Recurse -Force venv
+```
+
+-----
+
+## \#\# Version Control (Git & GitHub)
+
+**Clone Repository**
+Downloads a full copy of a repository from GitHub to your computer for the first time.
+
+```bash
+git clone <repository_url>
+```
+
+-----
+
+**Pull Changes**
+Updates your local code by downloading the latest changes from GitHub.
+
+```bash
+git pull
+```
+
+-----
+
+**Check Status**
+Shows you which files have been modified, which are new, and which are ready to be saved.
+
+```bash
+git status
+```
+
+-----
+
+**Stage Changes**
+Prepares all your current changes to be saved in the next commit.
+
+```bash
+git add .
+```
+
+-----
+
+**Commit Changes**
+Saves your staged changes to your local history with a descriptive message.
+
+```bash
+git commit -m "Your descriptive message here"
+```
+
+-----
+
+**Push Changes**
+Uploads your saved (committed) changes from your local computer to GitHub.
+
+```bash
+git push
+```
+
+GOOGLE_API_KEY = "AIzaSyDw5qM6vish4MvOXjd9vMh-8bFFfSaaHkA"
+
+picovoice access key: 9c7RE3aYRyioBNY83E44C+zQeZ7IGVT92y3kyJMnFznLLcI3WhxC8Q==
+
+SARA API Elevenlabs: sk_98b4aef2c5f2e9e9b60a469562c9c0304f37fee7fe66e4a1
+
+Available voices:
+Name: Rachel, ID: 21m00Tcm4TlvDq8ikWAM
+Name: Clyde, ID: 2EiwWnXFnvU5JabPnv8n
+Name: Roger, ID: CwhRBWXzGAHq8TQ4Fs17
+Name: Sarah, ID: EXAVITQu4vr4xnSDxMaL
+Name: Laura, ID: FGY2WhTYpPnrIDTdsKH5
+Name: Thomas, ID: GBv7mTt0atIp3Br8iCZE
+Name: Charlie, ID: IKne3meq5aSn9XLyUdCD
+Name: George, ID: JBFqnCBsd6RMkjVDRZzb
+Name: Callum, ID: N2lVS1w4EtoT3dr4eOWO
+Name: River, ID: SAz9YHcvj6GT2YYXdXww
+Name: Harry, ID: SOYHLrjzK2X1ezoPC6cr
+Name: Liam, ID: TX3LPaxmHKxFdv7VOQHJ
+Name: Alice, ID: Xb7hH8MSUJpSbSDYk0k2
+Name: Matilda, ID: XrExE9yKIg1WjnnlVkGX
+Name: Will, ID: bIHbv24MWmeRgasZH58o
+Name: Jessica, ID: cgSgspJ2msm6clMCkdW9
+Name: Eric, ID: cjVigY5qzO86Huf0OWal
+Name: Chris, ID: iP95p4xoKVk53GoZ742B
+Name: Brian, ID: nPczCjzI2devNBz1zQrb
+Name: Daniel, ID: onwK4e9ZLuTAKqWW03F9
+Name: Lily, ID: pFZP5JQG7iQjIQuC4Bku
+Name: Bill, ID: pqHfZKP75CvOlQylNhV4
+
+## How to Use and Switch
+To Use Whisper (Offline): Make sure STT_ENGINE = "whisper" in your config.py file. The first time you run it, Whisper will download the tiny.en model, which may take a minute.
+
+To Switch to Google (Online): In the future, you would simply change that one line in config.py to STT_ENGINE = "google", and the system will automatically use the other engine.

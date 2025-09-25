@@ -94,6 +94,24 @@ Uploads your saved (committed) changes from your local computer to GitHub.
 git push
 ```
 
+# 1. Initialize
+git init
+
+# 2. Set up Git LFS for the large model file
+git lfs install
+git lfs track "*.gguf"
+
+# 3. Stage and commit all files (respecting .gitignore and .gitattributes)
+git add .
+git commit -m "Initial commit of KALEIDOSCOPE RAG prototype"
+
+# 4. Connect to your GitHub repo and push
+git remote add origin https://github.com/h-sane/kaleidoscope.git
+git branch -M main
+git push -u origin main
+'''
+
+
 GOOGLE_API_KEY = "AIzaSyDw5qM6vish4MvOXjd9vMh-8bFFfSaaHkA"
 
 picovoice access key: 9c7RE3aYRyioBNY83E44C+zQeZ7IGVT92y3kyJMnFznLLcI3WhxC8Q==

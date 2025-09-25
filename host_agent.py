@@ -98,6 +98,17 @@ class HostAgent:
             return {"type": "sync", "response": summary}
 
         else: # conversation
-            prompt = f'Context: {recalled_memories}. Respond to the user: "{command}"'
+            # NEW: A smarter prompt that allows the LLM to ignore irrelevant context
+            prompt = f"""
+            Here is some potentially relevant context from my memory: 
+            {recalled_memories}
+
+            Instructions:
+            - Use the context ONLY if it is directly relevant to the user's command.
+            - If the context is not relevant, IGNORE it completely.
+            - Provide a direct, natural, and conversational response to the user's command.
+
+            User Command: "{command}"
+            """
             response = online_llm_text(prompt)
             return {"type": "sync", "response": response}

@@ -1,9 +1,7 @@
-# requirements.txt - SARA Hybrid AI Assistant - Stable Blueprint
+# requirements.txt - SARA Hybrid AI Assistant - Final Blueprint
 
 # -----------------------------------------------------------------------------
 # CORE DEPENDENCIES - PINNED FOR MAXIMUM STABILITY
-# This is the most critical section. We are forcing the use of NumPy 1.x
-# and a compatible version of TensorFlow to prevent all previous errors.
 # -----------------------------------------------------------------------------
 numpy==1.26.4
 pandas==2.1.4
@@ -16,7 +14,6 @@ tensorflow==2.15.0
 
 # -----------------------------------------------------------------------------
 # PROJECT LIBRARIES
-# The remaining top-level packages for SARA's functionality.
 # -----------------------------------------------------------------------------
 
 # Web Server
@@ -36,3 +33,11 @@ pywinauto
 pywin32
 pytesseract
 Pillow
+
+# Voice Integration
+pvporcupine
+pyaudio
+SpeechRecognition
+openai-whisper
+elevenlabs
+playsound

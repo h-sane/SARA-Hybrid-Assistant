@@ -31,3 +31,5 @@ playsound==1.2.2
 
 # UI Framework
 PyQt6
+gTTS
+pygame

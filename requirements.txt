@@ -1,8 +1,6 @@
 # requirements.txt - SARA Hybrid AI Assistant - Final Blueprint
 
-# -----------------------------------------------------------------------------
-# CORE DEPENDENCIES - PINNED FOR MAXIMUM STABILITY
-# -----------------------------------------------------------------------------
+# CORE DEPENDENCIES - PINNED FOR STABILITY
 numpy==1.26.4
 pandas==2.1.4
 scikit-learn==1.3.2
@@ -12,32 +10,24 @@ torchaudio==2.1.2
 transformers==4.36.2
 tensorflow==2.15.0
 
-# -----------------------------------------------------------------------------
 # PROJECT LIBRARIES
-# -----------------------------------------------------------------------------
-
-# Web Server
 flask
-
-# LLM Services
 ollama
 google-generativeai
 sentence-transformers
-
-# Vector Database for Memory
 chromadb
-
-# Desktop Automation & Perception
 pyautogui
 pywinauto
 pywin32
 pytesseract
 Pillow
 
-# Voice Integration
+# VOICE INTEGRATION (STABLE)
 pvporcupine
 pyaudio
 SpeechRecognition
-openai-whisper
 elevenlabs
-playsound
+playsound==1.2.2
+
+# UI Framework
+PyQt6

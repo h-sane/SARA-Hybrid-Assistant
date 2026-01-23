@@ -1,7 +1,19 @@
-# config.py
+import os
+
+# -----------------------------
+# GOOGLE SERVICE ACCOUNT SETUP
+# -----------------------------
+# Full path to your JSON key file
+SERVICE_ACCOUNT_PATH = r"C:\Users\husai\Desktop\CODES\Project\sara-473219-d84b1e9e5a57.json"
+
+# Set environment variable so Google SDK can locate the service account
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = SERVICE_ACCOUNT_PATH
+
+# Project ID from GCP
+GCP_PROJECT_ID = "sara-473219"
 
 # --- API Keys ---
-GOOGLE_API_KEY = "AIzaSyDw5qM6vish4MvOXjd9vMh-8bFFfSaaHkA"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)
 PICOVOICE_ACCESS_KEY = "9c7RE3aYRyioBNY83E44C+zQeZ7IGVT92y3kyJMnFznLLcI3WhxC8Q=="
 ELEVENLABS_API_KEY = "sk_98b4aef2c5f2e9e9b60a469562c9c0304f37fee7fe66e4a1"
 
@@ -10,14 +22,20 @@ OFFLINE_MODEL = "gemma:2b-instruct"
 
 # --- Paths ---
 TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-SARA_WAKE_WORD_PATH = "Hey-SARA_en_windows_v3_0_0.ppn" # Use your exact .ppn filename
+SARA_WAKE_WORD_PATH = "Hey-SARA_en_windows_v3_0_0.ppn"  # Use your exact .ppn filename
+
+# --- Application Executables ---
+APP_EXECUTABLES = {
+    "notepad": "notepad.exe",
+    "paint": "mspaint.exe",
+    "calc": "calc.exe"
+}
 
 # --- Voice Service Configuration ---
-STT_ENGINE = "whisper"
+STT_ENGINE = "google"
 WHISPER_MODEL = "base.en"
 
-# --- Voice Selection System ---
-# Change the name "Sarah" to any other name from the list below to switch SARA's voice.
+# --- ElevenLabs Voice Selection ---
 ELEVENLABS_VOICE_NAME = "Sarah"
 
 ELEVENLABS_VOICES = {

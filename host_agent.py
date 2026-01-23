@@ -4,35 +4,45 @@ import json
 import time
 from threading import Thread
 from llm_service import get_intent, get_automation_plan, online_llm_text, extract_facts_from_text
-from knowledge_base_manager import MemoryStream, get_user_details, update_user_details, update_contact
-from desktop_automation import launch_and_focus, type_text, press_key, hotkey
+from knowledge_base_manager import MemoryStream, get_user_details, update_user_details
+from robust_notepad_helpers import (launch_and_focus, find_edit_control, get_control_text, 
+                                    type_into_edit, save_notepad_file)
 from screen_perception import get_screen_text_with_ocr
 
-# --- AppAgent Classes ---
-class AppAgent:
-    def execute_action(self, action_type: str, kwargs: dict):
-        action_map = {"type_text": type_text, "press_key": press_key, "hotkey": hotkey}
-        func = action_map.get(action_type)
-        if func: return func(**kwargs)
-        return False
+# --- The Definitive NotepadAgent ---
+class NotepadAgent:
+    """A truly robust agent that uses the new helper functions."""
+    def __init__(self, app_connection, main_window):
+        self.app = app_connection
+        self.main_window = main_window
 
-class NotepadAgent(AppAgent):
-    """An agent that is now perfectly synced with the planner's simple schema."""
     def handle_subtask(self, sub_actions: list):
-        print(f"NotepadAgent executing simple sub_actions: {sub_actions}")
+        print(f"Definitive NotepadAgent executing: {sub_actions}")
+        try:
+            edit_control = find_edit_control(self.main_window)
+        except RuntimeError as e:
+            print(f"Could not proceed with Notepad automation: {e}")
+            return False
+
         for action in sub_actions:
             action_type = action.get("type")
             if action_type == "type_text":
-                self.execute_action("type_text", {"text": action.get("text", "")})
+                current_text = get_control_text(edit_control)
+                if current_text.strip() != "":
+                    print("Notepad already has content. Creating new file via menu.")
+                    self.main_window.menu_select("File->New")
+                    time.sleep(1)
+                    edit_control = find_edit_control(self.main_window)
+                
+                text_to_type = action.get("text", "")
+                print("Typing text...")
+                type_into_edit(edit_control, text_to_type)
                 time.sleep(0.5)
+
             elif action_type == "save_file":
                 filename = action.get("filename", "untitled.txt")
-                self.execute_action("hotkey", {"keys": ['ctrl', 's']})
-                time.sleep(1.5)
-                self.execute_action("type_text", {"text": filename})
-                time.sleep(0.5)
-                self.execute_action("press_key", {"key": 'enter'})
-                time.sleep(1)
+                print(f"Saving file as {filename}...")
+                save_notepad_file(self.app, self.main_window, filename)
         return True
 
 # --- HostAgent Class ---
@@ -44,19 +54,16 @@ class HostAgent:
 
     def _execute_automation_plan(self, plan: dict):
         application_name = plan.get("application", "").lower()
-        if not application_name:
-            print("Automation plan is missing an application.")
-            return
+        if not application_name: return
 
-        app_connection = launch_and_focus(application_name=application_name)
-        if app_connection:
-            time.sleep(1)
+        app_connection, main_window = launch_and_focus(application_name=application_name)
+        
+        if app_connection and main_window:
             agent_class = self.app_agent_map.get(application_name)
             if agent_class:
-                agent = agent_class()
+                agent = agent_class(app_connection, main_window)
                 agent.handle_subtask(plan.get("sub_actions", []))
-                action_summary = f"I successfully performed an action in {application_name}."
-                self.memory.add_memory(action_summary)
+                self.memory.add_memory(f"I successfully performed an action in {application_name}.")
             else:
                 print(f"No specific agent for '{application_name}'.")
         else:
@@ -67,8 +74,8 @@ class HostAgent:
         print(f"\nHostAgent: Processing command: '{command}'")
         recalled_memories = self.memory.recall_memories(command, num_results=2)
         print(f"HostAgent: Recalled memories: {recalled_memories}")
-        intent = get_intent(command)
-        print(f"HostAgent: Intent classified as '{intent}'")
+        intent = get_intent(command, recalled_memories)
+        print(f"HostAgent: Final Intent classified as '{intent}'")
 
         if intent == 'remember':
             new_facts = extract_facts_from_text(command)
@@ -98,17 +105,6 @@ class HostAgent:
             return {"type": "sync", "response": summary}
 
         else: # conversation
-            # NEW: A smarter prompt that allows the LLM to ignore irrelevant context
-            prompt = f"""
-            Here is some potentially relevant context from my memory: 
-            {recalled_memories}
-
-            Instructions:
-            - Use the context ONLY if it is directly relevant to the user's command.
-            - If the context is not relevant, IGNORE it completely.
-            - Provide a direct, natural, and conversational response to the user's command.
-
-            User Command: "{command}"
-            """
+            prompt = f'Context: {recalled_memories}. Respond to the user: "{command}"'
             response = online_llm_text(prompt)
             return {"type": "sync", "response": response}

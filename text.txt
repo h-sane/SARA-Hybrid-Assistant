@@ -1,0 +1,33 @@
+## The Definitive Test Scenarios
+Please perform this sequence of actions to validate the entire system.
+
+Scenario 1: The "Teach" Command
+This tests the remember intent, fact extraction, and the knowledge base.
+
+Action: Say Hey SARA, please remember these details for me: my name is Hussain, my professor is Dr. George, and my student ID is CSE-12345.
+
+Expected Result: SARA should verbally confirm that it has learned and saved these facts. You can also verify that knowledge_base.json has been updated with this information.
+
+Scenario 2: The "Foolproof Automation" Command
+This is the ultimate test of the new robust automation system.
+
+Preparation: Manually open a Notepad window and type some random text like "old text". Leave this window open.
+
+Action: Say Hey SARA, draft a letter to my professor in notepad about my project status and save it as final_report.txt.
+
+Expected Result:
+
+The existing Notepad window will be focused.
+
+The agent will detect that the file is not empty and create a new, blank file.
+
+A personalized letter will be typed, correctly using the name "Hussain" and "Dr. George" from the knowledge base.
+
+The "Save As" dialog will be handled correctly, and the file will be saved as final_report.txt.
+
+Scenario 3: The "Contextual Conversation" Command
+This tests the Memory Stream and the fix for context pollution.
+
+Action: After the automation is complete, say Hey SARA, what was the last thing you did?
+
+Expected Result: SARA should recall the memory of the Notepad automation from its vector database and give a relevant, intelligent answer, such as "I just finished drafting a letter in Notepad for you."

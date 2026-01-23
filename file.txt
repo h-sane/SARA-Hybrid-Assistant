@@ -1,1 +1,41 @@
-Hello World
+## Definitive Test Scenarios
+This test plan will validate that all our final fixes are working as intended.
+
+Test 1: API Optimization (The "Guard" Protocol)
+This tests if the local model is correctly handling simple tasks to save API calls.
+
+Action: Say Hey SARA, what's up?
+
+Expected Result:
+
+SARA should give a simple conversational response.
+
+Check the terminal: You should see the log Local LLM Intent Classified as: 'conversation'. This proves the fast, local model is working correctly, and we did not waste a precious online API call.
+
+Test 2: "Foolproof" Automation
+This tests the new, intelligent NotepadAgent.
+
+Preparation: Manually open a Notepad window and type some random text in it. Leave it open.
+
+Action: Say Hey SARA, open notepad and write a new note that says my project is finally working.
+
+Expected Result:
+
+SARA should see the existing Notepad window is not empty.
+
+It should press Ctrl+N to create a new, blank document.
+
+It will then type "my project is finally working." into this new document.
+
+This proves the agent is no longer blindly typing into existing windows.
+
+Test 3: Context-Aware Routing
+This tests if the online router can now correctly understand questions about past events.
+
+Action: Immediately after the Notepad test, say Hey SARA, what was the last automation you performed?
+
+Expected Result:
+
+Check the terminal: It should show the Online LLM Intent Raw Response: 'conversation'. This proves the router is no longer getting confused and correctly identifies this as a question.
+
+SARA should verbally respond by saying it just performed an action in Notepad, using the memory from its MemoryStream.

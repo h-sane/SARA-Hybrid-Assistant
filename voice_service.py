@@ -3,9 +3,8 @@
 import struct
 import pyaudio
 import pvporcupine
-from config import (PICOVOICE_ACCESS_KEY, SARA_WAKE_WORD_PATH, STT_ENGINE, 
-                    ELEVENLABS_API_KEY, ELEVENLABS_VOICES, ELEVENLABS_VOICE_NAME)
-from stt_engine import WhisperSTT, GoogleSTT
+from config import PICOVOICE_ACCESS_KEY, SARA_WAKE_WORD_PATH, ELEVENLABS_API_KEY, ELEVENLABS_VOICES, ELEVENLABS_VOICE_NAME
+from stt_engine import GoogleSTT # UPDATED: We only need to import GoogleSTT now
 from elevenlabs import play
 from elevenlabs.client import ElevenLabs
 
@@ -26,18 +25,14 @@ class VoiceService:
                 frames_per_buffer=self.porcupine.frame_length
             )
 
-            # --- STT Engine Selection ---
-            if STT_ENGINE == "whisper":
-                self.stt_engine = WhisperSTT()
-            elif STT_ENGINE == "google":
-                self.stt_engine = GoogleSTT()
-            else:
-                raise ValueError(f"Unsupported STT engine: {STT_ENGINE}")
+            # --- STT Engine Selection (Simplified) ---
+            # We now exclusively use the reliable Google STT engine.
+            self.stt_engine = GoogleSTT()
 
             # --- TTS Engine Initialization ---
             self.tts_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
 
-            print(f"VoiceService initialized. Using '{STT_ENGINE}' STT and '{ELEVENLABS_VOICE_NAME}' TTS voice. Listening for 'Hey SARA'...")
+            print(f"VoiceService initialized. Using 'Google' STT and '{ELEVENLABS_VOICE_NAME}' TTS voice. Listening for 'Hey SARA'...")
 
         except Exception as e:
             print(f"Error initializing VoiceService: {e}")
@@ -62,28 +57,53 @@ class VoiceService:
             return self.stt_engine.transcribe()
         return None
 
-    def speak(self, text: str):
-        """Converts text to speech using the voice selected in config.py."""
-        print(f"SARA says: '{text}'")
-        try:
-            # --- DYNAMIC VOICE SELECTION ---
-            # Look up the voice ID from our config dictionary using the selected name.
-            voice_id = ELEVENLABS_VOICES.get(ELEVENLABS_VOICE_NAME)
-            if not voice_id:
-                print(f"Error: Voice '{ELEVENLABS_VOICE_NAME}' not found in config. Using default 'Sarah'.")
-                voice_id = "EXAVITQu4vr4xnSDxMaL" # Fallback to Sarah's ID
-
-            audio = self.tts_client.text_to_speech.convert(
-                voice_id=voice_id,
-                model_id="eleven_multilingual_v2",
-                text=text
-            )
+def speak(text: str, tts_client=None, voice_name=ELEVENLABS_VOICE_NAME, voices=ELEVENLABS_VOICES):
+    """Converts text to speech using the specified voice.
+    
+    Args:
+        text: The text to be spoken
+        tts_client: Optional ElevenLabs client instance. If not provided, a new one will be created.
+        voice_name: Name of the voice to use (default: from config)
+        voices: Dictionary of available voices (default: from config)
+    """
+    print(f"SARA says: '{text}'")
+    try:
+        if tts_client is None:
+            tts_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
             
-            # play is a module, so we call the play function within it
-            play.play(audio)
+        voice_id = voices.get(voice_name)
+        if not voice_id:
+            print(f"Error: Voice '{voice_name}' not found. Using default 'Sarah'.")
+            voice_id = "EXAVITQu4vr4xnSDxMaL"
 
-        except Exception as e:
-            print(f"An error occurred during TTS: {e}")
+        audio = tts_client.text_to_speech.convert(
+            voice_id=voice_id,
+            model_id="eleven_multilingual_v2",
+            text=text
+        )
+        
+        play.play(audio)
+
+    except Exception as e:
+        print(f"An error occurred during TTS: {e}")
+
+class VoiceService:
+
+    def run_loop(self, host_agent):
+        """Continuously listen for wake word, then command, and route to HostAgent."""
+        try:
+            while True:
+                if self.listen_for_wake_word():
+                    command = self.listen_for_command()
+                    if command:
+                        response_data = host_agent.process_user_command(command)
+                        response_text = response_data.get("response") if isinstance(response_data, dict) else None
+                        if response_text:
+                            speak(response_text, self.tts_client)
+        except KeyboardInterrupt:
+            print("\nStopping listener...")
+        finally:
+            self.cleanup()
 
     def cleanup(self):
         if hasattr(self, 'porcupine') and self.porcupine:
@@ -92,25 +112,3 @@ class VoiceService:
             self.audio_stream.close()
         if hasattr(self, 'pa') and self.pa:
             self.pa.terminate()
-
-# --- Standalone Test ---
-if __name__ == '__main__':
-    print("Running VoiceService full loop test...")
-    print("Say 'Hey SARA', then 'hello'. Press Ctrl+C to exit.")
-
-    voice_service = VoiceService()
-    try:
-        if voice_service.porcupine:
-            while True:
-                if voice_service.listen_for_wake_word():
-                    command = voice_service.listen_for_command()
-                    if command:
-                        print(f"--- Command to be processed by HostAgent: '{command}' ---")
-                        if "hello" in command:
-                            voice_service.speak("Hello, Master. I am ready for your command.")
-                        else:
-                            voice_service.speak("I have received your command.")
-    except KeyboardInterrupt:
-        print("\nStopping listener...")
-    finally:
-        voice_service.cleanup()

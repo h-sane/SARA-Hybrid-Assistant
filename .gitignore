@@ -4,4 +4,7 @@ __pycache__/
 
 # Environment folders
 .venv/
+
+# Database
+chroma_db/
 venv/

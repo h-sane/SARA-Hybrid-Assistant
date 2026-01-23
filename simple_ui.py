@@ -4,7 +4,7 @@ import sys
 import threading
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QPushButton, 
                              QTextEdit, QLabel, QCheckBox, QHBoxLayout)
-from PyQt6.QtCore import pyqtSignal, QObject, Qt
+from PyQt6.QtCore import pyqtSignal, QObject, Qt, QTimer
 
 from voice_service import VoiceService
 from llm_service import online_llm_text
@@ -12,20 +12,27 @@ from llm_service import online_llm_text
 class WorkerSignals(QObject):
     update_log = pyqtSignal(str)
     status_changed = pyqtSignal(str)
+    init_finished = pyqtSignal()
 
 class SaraShowcase(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-        self.voice_service = VoiceService()
         self.is_running = False
+        self.voice_service = None
         self.thread = None
         self.signals = WorkerSignals()
         self.signals.update_log.connect(self.log_message)
         self.signals.status_changed.connect(self.update_status)
+        self.signals.init_finished.connect(self.on_init_finished)
+
+        # Start loading VoiceService (and Whisper model) in background
+        self.update_status("Loading Whisper Model... (Please Wait)")
+        self.start_btn.setEnabled(False)
+        threading.Thread(target=self.load_voice_service, daemon=True).start()
 
     def initUI(self):
-        self.setWindowTitle("SARA - Google TTS Showcase")
+        self.setWindowTitle("SARA - Offline Whisper STT")
         self.setGeometry(100, 100, 400, 500)
         
         layout = QVBoxLayout()
@@ -62,6 +69,18 @@ class SaraShowcase(QWidget):
         layout.addLayout(btn_layout)
         self.setLayout(layout)
 
+    def load_voice_service(self):
+        try:
+            self.voice_service = VoiceService()
+            self.signals.init_finished.emit()
+        except Exception as e:
+            self.signals.update_log.emit(f"Error loading model: {e}")
+
+    def on_init_finished(self):
+        self.update_status("Model Loaded. Ready.")
+        self.start_btn.setEnabled(True)
+        self.log_message("--- System Ready (Whisper Small) ---")
+
     def log_message(self, text):
         self.chat_log.append(text)
 
@@ -95,7 +114,7 @@ class SaraShowcase(QWidget):
                 self.signals.update_log.emit(f"User: {user_text}")
                 self.signals.status_changed.emit("Thinking...")
                 
-                # Simple LLM Call (No intent, just chat)
+                # Simple LLM Call
                 prompt = f"Respond to: {user_text}"
                 response = online_llm_text(prompt)
                 
@@ -105,14 +124,15 @@ class SaraShowcase(QWidget):
                 engine = "elevenlabs" if self.elevenlabs_check.isChecked() else "google"
                 self.voice_service.speak(response, engine=engine)
             else:
-                pass # Timeout or silence, just loop
+                pass 
             
         self.signals.status_changed.emit("Idle")
         self.signals.update_log.emit("--- Stopped ---")
 
     def closeEvent(self, event):
         self.is_running = False
-        self.voice_service.cleanup()
+        if self.voice_service:
+            self.voice_service.cleanup()
         event.accept()
 
 if __name__ == "__main__":

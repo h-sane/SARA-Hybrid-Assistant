@@ -22,8 +22,10 @@ pywin32
 pytesseract
 Pillow
 
+
 # VOICE INTEGRATION (STABLE)
-pvporcupine
+openai-whisper
+tqdm
 pyaudio
 SpeechRecognition
 elevenlabs

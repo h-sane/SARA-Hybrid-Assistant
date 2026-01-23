@@ -3,7 +3,7 @@
 import os
 import time
 from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_NAME, ELEVENLABS_VOICES
-from stt_engine import GoogleSTT
+from stt_engine import WhisperSTT
 from elevenlabs import play
 from elevenlabs.client import ElevenLabs
 from gtts import gTTS
@@ -13,7 +13,8 @@ class VoiceService:
     def __init__(self):
         try:
             # --- STT Engine ---
-            self.stt_engine = GoogleSTT()
+            # Using Offline Whisper as requested
+            self.stt_engine = WhisperSTT()
 
             # --- TTS Clients ---
             self.elevenlabs_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)

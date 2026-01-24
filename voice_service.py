@@ -4,7 +4,7 @@ import os
 import time
 from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_NAME, ELEVENLABS_VOICES
 from stt_engine import GoogleSTT
-from elevenlabs import play
+from elevenlabs.play import play
 from elevenlabs.client import ElevenLabs
 from gtts import gTTS
 import pygame

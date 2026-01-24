@@ -33,3 +33,5 @@ playsound==1.2.2
 PyQt6
 gTTS
 pygame
+groq
+python-dotenv

@@ -1,25 +1,36 @@
 # llm_service.py
-
-import google.generativeai as genai
-import ollama
 import json
 import re
-from config import OFFLINE_MODEL
+from groq import Groq
+from config import GROQ_API_KEY, GROQ_MODEL
 
-# Configure the online model (uses service account from config.py)
+# Configure the online model (Groq)
 try:
-    genai.configure() 
-    online_model = genai.GenerativeModel("gemini-1.5-flash-latest")
-    print("Online model (Gemini 1.5 Flash) configured successfully.")
+    if not GROQ_API_KEY:
+        print("Warning: GROQ_API_KEY is missing in .env or config.py")
+        online_client = None
+    else:
+        online_client = Groq(api_key=GROQ_API_KEY)
+        print(f"Online model (Groq: {GROQ_MODEL}) configured successfully.")
 except Exception as e:
     print(f"Error configuring online model: {e}")
-    online_model = None
+    online_client = None
 
 def online_llm_text(prompt: str) -> str:
-    if not online_model: return "Error: Online model is not configured."
+    if not online_client: return "Error: Online model is not configured."
     try:
-        response = online_model.generate_content(prompt)
-        return response.text
+        completion = online_client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1024,
+            top_p=1,
+            stream=False,
+            stop=None,
+        )
+        return completion.choices[0].message.content
     except Exception as e:
         print(f"Error communicating with online model: {e}")
         return f"Error: Could not get a response. Details: {e}"
@@ -48,6 +59,7 @@ def extract_facts_from_text(text_to_analyze: str) -> dict:
     Analyze the user's statement and extract any personal facts (like name, age, college, etc.) into a JSON object.
     The keys should be snake_case. If no facts, return {{}}.
     Statement: "{text_to_analyze}"
+    Respond with ONLY the JSON.
     """
     try:
         facts_str = online_llm_text(prompt)
@@ -70,7 +82,7 @@ def get_automation_plan(user_command: str, context: dict = None) -> dict:
     "application" MUST be lowercase.
     "sub_actions" MUST be a list of dictionaries with a "type" key.
     Valid "type" values are "type_text" and "save_file".
-    Respond with ONLY the JSON.
+    Respond with ONLY the JSON. Do not include markdown formatting like ```json.
     """
     try:
         response_str = online_llm_text(prompt)

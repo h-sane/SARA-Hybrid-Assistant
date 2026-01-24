@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # -----------------------------
 # GOOGLE SERVICE ACCOUNT SETUP
@@ -13,7 +16,14 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = SERVICE_ACCOUNT_PATH
 GCP_PROJECT_ID = "sara-473219"
 
 # --- API Keys ---
+# --- API Keys ---
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)
+
+# --- Groq Configuration ---
+# 'llama-3.3-70b-versatile' is recommended for complex automation/JSON tasks.
+# 'llama-3.1-8b-instant' is faster but may be less accurate for complex commands.
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 PICOVOICE_ACCESS_KEY = "9c7RE3aYRyioBNY83E44C+zQeZ7IGVT92y3kyJMnFznLLcI3WhxC8Q=="
 ELEVENLABS_API_KEY = "sk_98b4aef2c5f2e9e9b60a469562c9c0304f37fee7fe66e4a1"
 

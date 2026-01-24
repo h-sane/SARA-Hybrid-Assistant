@@ -8,3 +8,4 @@ __pycache__/
 # Database
 chroma_db/
 venv/
+.env

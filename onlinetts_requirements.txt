@@ -21,11 +21,9 @@ pywinauto
 pywin32
 pytesseract
 Pillow
-groq
 
 # VOICE INTEGRATION (STABLE)
-openai-whisper
-tqdm
+pvporcupine
 pyaudio
 SpeechRecognition
 elevenlabs
@@ -35,3 +33,5 @@ playsound==1.2.2
 PyQt6
 gTTS
 pygame
+groq
+python-dotenv

@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # -----------------------------
 # GOOGLE SERVICE ACCOUNT SETUP
@@ -12,6 +15,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = SERVICE_ACCOUNT_PATH
 # Project ID from GCP
 GCP_PROJECT_ID = "sara-473219"
 
+# --- API Keys ---
 # --- API Keys ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)

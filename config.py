@@ -20,6 +20,7 @@ GCP_PROJECT_ID = "sara-473219"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", None)
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
 # --- Groq Configuration ---
 # 'llama-3.3-70b-versatile' is recommended for complex automation/JSON tasks.
@@ -42,8 +43,9 @@ APP_EXECUTABLES = {
     "calc": "calc.exe"
 }
 
-# --- Voice Service Configuration ---
-STT_ENGINE = "deepgram"
+# STT Engine Selection
+# Options: "google", "deepgram", "sarvam"
+STT_ENGINE = "sarvam" 
 WHISPER_MODEL = "base.en"
 
 # --- ElevenLabs Voice Selection ---

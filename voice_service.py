@@ -5,7 +5,7 @@ import time
 import csv
 from datetime import datetime
 from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_NAME, ELEVENLABS_VOICES
-from stt_engine import GoogleSTT
+from stt_engine import GoogleSTT, DeepgramSTT, SarvamSTT, STTMetrics
 from elevenlabs.play import play
 from elevenlabs.client import ElevenLabs
 from gtts import gTTS
@@ -17,10 +17,10 @@ class VoiceService:
             # --- STT Engine ---
             from config import STT_ENGINE
             if STT_ENGINE == "deepgram":
-                from stt_engine import DeepgramSTT
                 self.stt_engine = DeepgramSTT()
+            elif STT_ENGINE == "sarvam":
+                self.stt_engine = SarvamSTT()
             else:
-                from stt_engine import GoogleSTT
                 self.stt_engine = GoogleSTT()
 
             # --- TTS Clients ---

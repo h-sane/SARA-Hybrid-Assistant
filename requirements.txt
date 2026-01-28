@@ -1,38 +1,25 @@
-# requirements.txt - SARA Hybrid AI Assistant - Final Blueprint
+# SARA Hybrid Assistant - Core Dependencies
 
-# CORE DEPENDENCIES - PINNED FOR STABILITY
-numpy==1.26.4
-pandas==2.1.4
-scikit-learn==1.3.2
-torch==2.1.2
-torchvision==0.16.2
-torchaudio==2.1.2
-transformers==4.36.2
-tensorflow==2.15.0
+# Environment & Config
+python-dotenv
+requests
 
-# PROJECT LIBRARIES
-flask
-ollama
-google-generativeai
-sentence-transformers
-chromadb
-pyautogui
-pywinauto
-pywin32
-pytesseract
-Pillow
-
-# VOICE INTEGRATION (STABLE)
-pvporcupine
-pyaudio
+# STT & Audio
 SpeechRecognition
-elevenlabs
-playsound==1.2.2
+pyaudio
 deepgram-sdk
+gTTS
+pygame
+
+# LLM / AI
+groq
+# google-generativeai # If used later
+# ollama # If used later
 
 # UI Framework
 PyQt6
-gTTS
-pygame
-groq
-python-dotenv
+PyQt6-Qt6
+PyQt6-sip
+
+# ElevenLabs (TTS)
+elevenlabs

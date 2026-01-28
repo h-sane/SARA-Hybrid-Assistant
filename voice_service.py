@@ -2,8 +2,10 @@
 
 import os
 import time
+import csv
+from datetime import datetime
 from config import ELEVENLABS_API_KEY, ELEVENLABS_VOICE_NAME, ELEVENLABS_VOICES
-from stt_engine import GoogleSTT
+from stt_engine import GoogleSTT, MoonshineSTT, STTMetrics
 from elevenlabs.play import play
 from elevenlabs.client import ElevenLabs
 from gtts import gTTS
@@ -13,24 +15,63 @@ class VoiceService:
     def __init__(self):
         try:
             # --- STT Engine ---
-            self.stt_engine = GoogleSTT()
+            from config import STT_ENGINE
+            
+            if STT_ENGINE == "moonshine":
+                self.stt_engine = MoonshineSTT()
+            else:
+                self.stt_engine = GoogleSTT()
 
             # --- TTS Clients ---
             self.elevenlabs_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
             
             # Initialize pygame mixer for gTTS playback
             pygame.mixer.init()
-
-            print(f"VoiceService initialized.")
-
+            
+            print(f"VoiceService initialized with engine: {STT_ENGINE}")
+            
         except Exception as e:
             print(f"Error initializing VoiceService: {e}")
 
     def listen(self) -> str | None:
-        """Directly listens for a command using Google STT."""
+        """Directly listens for a command and logs metrics."""
         if self.stt_engine:
-            return self.stt_engine.transcribe()
+            result = self.stt_engine.transcribe()
+            
+            # Handle tuple return (text, metrics)
+            if isinstance(result, tuple):
+                text, metrics = result
+                if text and metrics:
+                    self.log_metrics(metrics, text)
+                return text
+            else:
+                # Fallback for old engines or if tuple unpack fails
+                return result
         return None
+
+    def log_metrics(self, metrics: STTMetrics, text: str):
+        """Logs STT performance metrics to a CSV file."""
+        csv_file = "stt_benchmark_results.csv"
+        file_exists = os.path.isfile(csv_file)
+        try:
+            with open(csv_file, mode="a", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                # Write header if new file
+                if not file_exists:
+                    writer.writerow(["Timestamp", "Model", "Audio Duration (s)", "Processing Time (s)", "RTF", "Confidence", "Transcript"])
+                
+                writer.writerow([
+                    metrics.timestamp.isoformat(),
+                    metrics.model_name,
+                    f"{metrics.audio_duration:.4f}",
+                    f"{metrics.processing_time:.4f}",
+                    f"{metrics.rtf:.4f}",
+                    metrics.confidence if metrics.confidence is not None else "N/A",
+                    text
+                ])
+                print(f"Metrics logged to {csv_file}")
+        except Exception as e:
+            print(f"Failed to log metrics: {e}")
 
     def speak(self, text: str, engine: str = "google"):
         """

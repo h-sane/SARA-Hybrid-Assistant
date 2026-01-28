@@ -21,6 +21,7 @@ pywinauto
 pywin32
 pytesseract
 Pillow
+useful-moonshine-onnx
 groq
 
 # VOICE INTEGRATION (STABLE)

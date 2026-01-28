@@ -38,7 +38,7 @@ APP_EXECUTABLES = {
 }
 
 # --- Voice Service Configuration ---
-STT_ENGINE = "google"
+STT_ENGINE = "moonshine"
 WHISPER_MODEL = "base.en"
 
 # --- ElevenLabs Voice Selection ---

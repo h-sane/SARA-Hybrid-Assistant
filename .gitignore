@@ -1,0 +1,18 @@
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.venv/
+venv_old/
+
+# Secrets
+.env
+
+# Database
+chroma_db/
+
+# Logs & Metrics
+stt_benchmark_results.csv
+*.log

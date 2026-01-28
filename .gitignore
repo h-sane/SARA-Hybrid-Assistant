@@ -9,3 +9,6 @@ __pycache__/
 chroma_db/
 venv/
 .env
+
+# Local Metrics/Logs
+stt_benchmark_results.csv

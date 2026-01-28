@@ -15,7 +15,13 @@ class VoiceService:
     def __init__(self):
         try:
             # --- STT Engine ---
-            self.stt_engine = GoogleSTT()
+            from config import STT_ENGINE
+            if STT_ENGINE == "deepgram":
+                from stt_engine import DeepgramSTT
+                self.stt_engine = DeepgramSTT()
+            else:
+                from stt_engine import GoogleSTT
+                self.stt_engine = GoogleSTT()
 
             # --- TTS Clients ---
             self.elevenlabs_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)

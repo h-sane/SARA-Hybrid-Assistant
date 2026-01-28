@@ -28,6 +28,7 @@ pyaudio
 SpeechRecognition
 elevenlabs
 playsound==1.2.2
+deepgram-sdk
 
 # UI Framework
 PyQt6
